@@ -19,6 +19,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final List<String> goalOptions = [
+    'Not chosen',
     'Diet',
     'Sober',
     'Cigarettes',
@@ -44,13 +45,13 @@ class _SettingsPageState extends State<SettingsPage> {
     'Fast Food',
     'Self-Harm',
   ];
-  final List<String> sexOptions = ['Male', 'Female'];
+  final List<String> sexOptions = ['Not chosen', 'Male', 'Female'];
   bool _isLoading = true;
   // Do name and email address later as they may be slightly more complicated with text-controllers
   late String _currentName = "";
   late String _currentEmail = "";
-  late String _currentGoal = "Not chosen";
-  late String _currentSex = "Not chosen";
+  late String _currentGoal = goalOptions[0];
+  late String _currentSex = sexOptions[0];
   late DateTime _currentStartDate = DateTime.now();
 
   @override
@@ -68,125 +69,126 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? Container(
-            color: AppTheme.darkGrey,
-            child: SafeArea(
-              child: Center(
-                  child: CircularProgressIndicator(
-                color: AppTheme.green,
-              )),
-            ),
-          )
-        : Container(
-            decoration: BoxDecoration(
-              color: AppTheme.darkGrey,
-            ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  Stack(
+    return Scaffold(
+        body: _isLoading
+            ? Container(
+                color: AppTheme.darkGrey,
+                child: SafeArea(
+                  child: Center(
+                      child: CircularProgressIndicator(
+                    color: AppTheme.green,
+                  )),
+                ),
+              )
+            : Container(
+                decoration: BoxDecoration(
+                  color: AppTheme.darkGrey,
+                ),
+                child: SafeArea(
+                  child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      Stack(
                         children: [
-                          TextButton(
-                              onPressed: () {
-                                // Pass the updated values back to homepage to avoid complex state management
-                                Navigator.pop(context, {
-                                  'name': _currentName,
-                                  'startDate': _currentStartDate,
-                                });
-                              },
-                              child: Padding(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                  onPressed: () {
+                                    // Pass the updated values back to homepage to avoid complex state management
+                                    Navigator.pop(context, {
+                                      'name': _currentName,
+                                      'startDate': _currentStartDate,
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15.0),
+                                    child: Text(
+                                      'Done',
+                                      style: TextStyle(
+                                          color: AppTheme.green,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 15.0),
+                                    horizontal: 15.0, vertical: 10.0),
                                 child: Text(
-                                  'Done',
+                                  'Settings',
                                   style: TextStyle(
-                                      color: AppTheme.green,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400),
+                                      fontSize: 20,
+                                      color: AppTheme.white1,
+                                      fontWeight: FontWeight.w600),
                                 ),
-                              )),
+                              )
+                            ],
+                          ),
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 15.0, vertical: 10.0),
-                            child: Text(
-                              'Settings',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: AppTheme.white1,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          )
-                        ],
-                      ),
+
+                      // Text
+                      textTitleRow('Name'),
+                      // Input text area
+                      settingsTextField('Enter your name', 'name'),
+
+                      // Text
+                      textTitleRow('Email Address'),
+                      // Input text area
+                      settingsTextField('Enter your email address', 'email'),
+
+                      // Text
+                      textTitleRow('Goal'),
+                      // Select goal custom picker
+                      textTitleRow3(
+                          _currentGoal,
+                          context,
+                          () => customScaffold(
+                              'Choose your goal',
+                              context,
+                              selectionList(Key("goal_list"), context,
+                                  goalOptions, "goal"))),
+
+                      // Text
+                      textTitleRow('Sex'),
+                      // Select Sex custom picker
+                      textTitleRow3(
+                          _currentSex,
+                          context,
+                          () => customScaffold(
+                              'Choose your sex',
+                              context,
+                              selectionList(Key("sex_list"), context,
+                                  sexOptions, "sex"))),
+
+                      // Text
+                      textTitleRow('Start Date'),
+                      // Select Start Date apple picker
+                      textTitleRow4(formatDate(_currentStartDate), context),
+                      //Small sized box(gap)
+                      SizedBox(height: 20.0),
+
+                      // Terms of service
+                      textTitleRow2(
+                          'Terms of Service',
+                          context,
+                          () => customScaffold('', context,
+                              termsOfServiceContent())),
+
+                      // Privacy policy
+                      textTitleRow2(
+                          'Privacy Policy',
+                          context,
+                          () => customScaffold('', context,
+                              privacyPolicyContent())),
                     ],
                   ),
-
-                  // Text
-                  textTitleRow('Name'),
-                  // Input text area
-                  settingsTextField('Enter your name', 'name'),
-
-                  // Text
-                  textTitleRow('Email Address'),
-                  // Input text area
-                  settingsTextField('Enter your email address', 'email'),
-
-                  // Text
-                  textTitleRow('Goal'),
-                  // Select goal custom picker
-                  textTitleRow3(
-                      _currentGoal,
-                      context,
-                      () => customScaffold(
-                          'Goal',
-                          context,
-                          selectionList(
-                              Key("goal_list"), context, goalOptions, "goal"))),
-
-                  // Text
-                  textTitleRow('Sex'),
-                  // Select Sex custom picker
-                  textTitleRow3(
-                      _currentSex,
-                      context,
-                      () => customScaffold(
-                          'Sex',
-                          context,
-                          selectionList(
-                              Key("sex_list"), context, sexOptions, "sex"))),
-
-                  // Text
-                  textTitleRow('Start Date'),
-                  // Select Start Date apple picker
-                  textTitleRow4(formatDate(_currentStartDate), context),
-                  //Small sized box(gap)
-                  SizedBox(height: 20.0),
-
-                  // Terms of service
-                  textTitleRow2(
-                      'Terms of Service',
-                      context,
-                      () => customScaffold('App Terms of service', context,
-                          termsOfServiceContent())),
-
-                  // Privacy policy
-                  textTitleRow2(
-                      'Privacy Policy',
-                      context,
-                      () => customScaffold('App Privacy Policy', context,
-                          privacyPolicyContent())),
-                ],
-              ),
-            ));
+                )));
   }
 
   void _handleNameUpdate(String selectedName) async {
@@ -246,26 +248,26 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-Widget selectionList(Key listKey, BuildContext context, List<String> dataList, String changeVar) {
-  return EnhancedListView(
-    listKey: listKey,
-    dataList: dataList,
-    changeVar: changeVar,
-    onItemTap: (item) {
-      switch (changeVar) {
-        case "goal":
-          _handleGoalUpdate(item);
-          Navigator.pop(context);
-          break;
-        case "sex":
-          _handleSexUpdate(item);
-          Navigator.pop(context);
-          break;
-      }
-    },
-  );
-}
-
+  Widget selectionList(Key listKey, BuildContext context, List<String> dataList,
+      String changeVar) {
+    return EnhancedListView(
+      listKey: listKey,
+      dataList: dataList,
+      changeVar: changeVar,
+      onItemTap: (item) {
+        switch (changeVar) {
+          case "goal":
+            _handleGoalUpdate(item);
+            Navigator.pop(context);
+            break;
+          case "sex":
+            _handleSexUpdate(item);
+            Navigator.pop(context);
+            break;
+        }
+      },
+    );
+  }
 
   // Function to show the date picker
   Future<void> _showDatePicker(BuildContext context) async {
@@ -433,7 +435,7 @@ Widget customScaffold(
           icon: Icon(
             Icons.arrow_left,
             color: AppTheme.white1,
-            size: 35,
+            size: 50,
           ),
           onPressed: Navigator.of(context).pop),
       backgroundColor: Colors.transparent,

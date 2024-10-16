@@ -121,6 +121,13 @@ class _HomePageState extends State<HomePage> {
   Timer? _timer;
   int? lastSampledIndex;
 
+  int _timeMode = 0;
+  final List<String> possibleTimeModes = [
+    'Days',
+    'Hours',
+    "Minutes",
+    "Seconds"
+  ];
   late String _name = "";
   late DateTime _startDate = DateTime.now();
 
@@ -170,11 +177,7 @@ class _HomePageState extends State<HomePage> {
                   CupertinoPageRoute(
                     barrierDismissible: true,
                     fullscreenDialog: true,
-                    builder: (context) {
-                      return Scaffold(
-                        body: SettingsPage(),
-                      );
-                    },
+                    builder: (BuildContext context) => SettingsPage(),
                   ),
                 );
 
@@ -205,34 +208,42 @@ class _HomePageState extends State<HomePage> {
                 fontWeight: FontWeight.w600,
                 color: AppTheme.white1),
           ),
-          SizedBox(height: MediaQuery.of(context).size.height * .20),
+          SizedBox(height: MediaQuery.of(context).size.height * .15),
           Column(
             children: [
               Text(
                 'It has been',
                 style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
                     color: AppTheme.white1),
               ),
               SizedBox(height: 8),
-              Text(
-                // Add ability to see hours, seconds, etc... later
-                "${DateTime.now().difference(_startDate).inDays}",
-                style: TextStyle(
-                    color: AppTheme.white1,
-                    fontSize: 85,
-                    fontWeight: FontWeight.w600),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.12,
+                child: GestureDetector(
+                  onTap: () {
+                    _handleNumTap();
+                  },
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 1200),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    child: _timeWidget(),
+                  ),
+                ),
               ),
               SizedBox(height: 6),
               Text(
-                'Days',
+                possibleTimeModes[_timeMode],
                 style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     color: AppTheme.white1),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 12.0),
               OutlinedButton(
                   style: ButtonStyle(
                     backgroundColor:
@@ -247,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                     )),
                   ),
                   onPressed: () {
-                    showCupertinoDialog(
+                    showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return CupertinoAlertDialog(
@@ -276,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                     'Restart',
                     style: TextStyle(color: AppTheme.white1),
                   )),
-              SizedBox(height: MediaQuery.of(context).size.height * .10),
+              SizedBox(height: MediaQuery.of(context).size.height * .08),
               Center(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.70,
@@ -340,6 +351,49 @@ class _HomePageState extends State<HomePage> {
       _startDate = DateTime.now();
     });
     prefs.setInt("date", _startDate.millisecondsSinceEpoch);
+  }
+
+  void _handleNumTap() {
+    setState(() {
+      _timeMode = ++_timeMode % 4;
+    });
+  }
+
+  _timeWidget() {
+    if (_timeMode == 0) {
+      return Text(
+        key: ValueKey<int>(0),
+        // Add ability to see hours, seconds, etc... later
+        "${DateTime.now().difference(_startDate).inDays}",
+        style: TextStyle(
+            color: AppTheme.white1, fontSize: 84, fontWeight: FontWeight.w700),
+        textAlign: TextAlign.center,
+      );
+    } else if (_timeMode == 1) {
+      return Text(
+        key: ValueKey<int>(1),
+        "${DateTime.now().difference(_startDate).inHours}",
+        style: TextStyle(
+            color: AppTheme.white1, fontSize: 60, fontWeight: FontWeight.w700),
+        textAlign: TextAlign.center,
+      );
+    } else if (_timeMode == 2) {
+      return Text(
+        key: ValueKey<int>(2),
+        "${DateTime.now().difference(_startDate).inMinutes}",
+        style: TextStyle(
+            color: AppTheme.white1, fontSize: 48, fontWeight: FontWeight.w700),
+        textAlign: TextAlign.center,
+      );
+    } else if (_timeMode == 3) {
+      return Text(
+        key: ValueKey<int>(3),
+        "${DateTime.now().difference(_startDate).inSeconds}",
+        style: TextStyle(
+            color: AppTheme.white1, fontSize: 32, fontWeight: FontWeight.w700),
+        textAlign: TextAlign.center,
+      );
+    }
   }
 }
 

@@ -17,34 +17,23 @@ class EnhancedListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppTheme.darkGrey.withOpacity(0.8),
-            AppTheme.darkGrey,
-          ],
-        ),
-      ),
-      child: ListView.builder(
-        key: listKey,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-        itemCount: dataList.length,
-        itemBuilder: (context, index) {
-          return AnimatedListItem(
-            index: index,
-            child: _buildListItem(dataList[index], context),
-          );
-        },
-      ),
+    return ListView(
+      key: listKey,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+      children: dataList
+          .asMap()
+          .entries
+          .map((entry) => AnimatedListItem(
+                index: entry.key,
+                child: _listItemCard(entry.value, context),
+              ))
+          .toList(),
     );
   }
 
-  Widget _buildListItem(String item, BuildContext context) {
+  Widget _listItemCard(String item, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: 14.0),
       child: InkWell(
         onTap: () => onItemTap(item),
         child: Container(
@@ -60,29 +49,24 @@ class EnhancedListView extends StatelessWidget {
             borderRadius: BorderRadius.circular(12.0),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.green.withOpacity(0.1),
-                blurRadius: 8,
+                color: AppTheme.green.withOpacity(0.2),
+                blurRadius: 4,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 18.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   item,
-                  style: const TextStyle(
-                    fontSize: 18.0,
+                  style:  const TextStyle(
+                    fontSize: 22.0,
                     color: AppTheme.green,
                     fontWeight: FontWeight.w500,
                   ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: AppTheme.green.withOpacity(0.5),
-                  size: 26.0,
                 ),
               ],
             ),
@@ -98,10 +82,10 @@ class AnimatedListItem extends StatefulWidget {
   final Widget child;
 
   const AnimatedListItem({
-    Key? key,
+    super.key,
     required this.index,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   _AnimatedListItemState createState() => _AnimatedListItemState();
@@ -126,13 +110,18 @@ class _AnimatedListItemState extends State<AnimatedListItem>
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: Offset(0.0, 0.2),
+      begin: Offset(0.0, 5.0),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    _controller.forward(from: 0.0);
+    // Delay the animation based on index for a staggered effect
+    Future.delayed(Duration(milliseconds: widget.index * 100), () {
+      if (mounted) {
+        _controller.forward();
+      }
+    });
   }
 
   @override
