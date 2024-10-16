@@ -120,6 +120,7 @@ class _HomePageState extends State<HomePage> {
   late Quote _currentSelectedQuote = Quote("", "");
   Timer? _timer;
   int? lastSampledIndex;
+  bool _isCooldown = false;
 
   int _timeMode = 0;
   final List<String> possibleTimeModes = [
@@ -130,6 +131,7 @@ class _HomePageState extends State<HomePage> {
   ];
   late String _name = "";
   late DateTime _startDate = DateTime.now();
+  
 
   Quote getRandomQuoteWithoutRepeats() {
     final random = Random();
@@ -354,8 +356,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handleNumTap() {
+    if (_isCooldown) return;
+
     setState(() {
+      _isCooldown = true;
       _timeMode = ++_timeMode % 4;
+    });
+
+    Timer(Duration(milliseconds: 1200), () {
+      setState(() {
+        _isCooldown = false;
+      });
     });
   }
 
