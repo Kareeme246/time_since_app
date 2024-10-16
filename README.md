@@ -20,6 +20,7 @@ You'll need to have Flutter installed on your machine. For more details on setti
 - [x] Basic app functionality
 - [X] Enhance UI of list displays
 - [X] Add ability to display times in different units
+- [ ] Add home and lockscreen widgets
 - [ ] Add Unit and Integration tests
 - [ ] User settings to allow customization of background/other settings
 - [ ] Add support for multiple goal tracking
