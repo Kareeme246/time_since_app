@@ -6,8 +6,7 @@ The app is meant to be as simple, elegant, and zenful as possible (both in code 
 
 ## 📱 Demo
 
-**Coming Soon**
-<!-- Include screenshots, gifs, or a link to a video demo here -->
+https://github.com/user-attachments/assets/aeee72cf-a244-47cf-84e8-b05f507c4f75
 
 ## 🛠️ Installation
 
